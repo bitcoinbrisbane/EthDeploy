@@ -1,7 +1,7 @@
 ﻿using System;
 namespace ETHGitHubDeploy.Models
 {
-    public class DeployResult
+    public class DeployResult : ContractDetails
     {
         public String Address { get; set; }
         

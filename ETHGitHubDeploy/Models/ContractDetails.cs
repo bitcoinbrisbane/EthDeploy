@@ -7,6 +7,8 @@ namespace ETHGitHubDeploy.Models
         
         public String ABI { get; set; }
         
+        public String JSON { get; set; }
+        
         public ContractDetails()
         {
         }

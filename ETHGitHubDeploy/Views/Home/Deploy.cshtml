@@ -1,0 +1,28 @@
+﻿@model ETHGitHubDeploy.Models.DeployResult
+
+@{
+    ViewBag.Title = "ETH Deploy";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+
+@Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+    <div class="alert alert-success">
+        Contract address is @Model.Address
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Contract Details</div>
+        <div class="panel-body">
+            <div class="form-group">
+                @Html.LabelFor(model => model.JSON, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.JSON, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.JSON, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

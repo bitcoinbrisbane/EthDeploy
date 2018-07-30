@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace ETHGitHubDeploy.Models
 {
-    public class DeployRequest : DeployResult
+    public class DeployRequest
     {
         public String Username { get; set; }
         

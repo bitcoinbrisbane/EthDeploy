@@ -1,13 +1,13 @@
 ﻿@model ETHGitHubDeploy.Models.DeployRequest
 
 @{
-    ViewBag.Title = "Deploy";
+    ViewBag.Title = "ETH Deploy";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <br />
 
-@using (Html.BeginForm())
+@using (Html.BeginForm("Deploy", "Home"))
 {
     @Html.AntiForgeryToken()
 
@@ -47,7 +47,7 @@
     </div>
 
     <div class="panel panel-default">
-        <div class="panel-heading">Security</div>
+        <div class="panel-heading">Contracts</div>
         <div class="panel-body">
             <div class="form-group">
                 @Html.LabelFor(model => model.Contract, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -81,13 +81,13 @@
     </div>
 
     <div class="panel panel-default">
-        <div class="panel-heading">Node</div>
+        <div class="panel-heading">Deployment</div>
         <div class="panel-body">
             <div class="form-group">
-                @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.Node, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                    @Html.EditorFor(model => model.Node, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Node, "", new { @class = "text-danger" })
                 </div>
             </div>
         </div>
@@ -96,7 +96,7 @@
 
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Deploy" class="btn btn-success" />
+            <input type="submit" value="Compile & Deploy" class="btn btn-success" />
         </div>
     </div>
 </div>

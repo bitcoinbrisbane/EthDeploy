@@ -34,33 +34,7 @@ namespace ETHGitHubDeploy.Controllers
     
         public IActionResult Index()
         {
-			//         var client = new GitHubClient(new ProductHeaderValue("ethdeploy"));
-			////clientid = "9954782b14eb965f2a29";
-			//         //secert = 789fa5e6f1bfb6f6df5e1584d1f17830731b07fa
-			//         var user = await client.User.Get("bitcoinbrisbane");
-
-			//         var repos = await client.Repository.GetAllPublic();
-
-			//var content = client.Repository.Content;
-
-			//var branch = repos[0].DefaultBranch;
-
-
-			//String url = "https://raw.githubusercontent.com/bitcoinbrisbane/HotPotato/master/contracts/Token.sol?token=AIBZDjwzPI3OkfsSXNgUVRaJO0KDjYs6ks5bYVpxwA%3D%3D";
-
-			//using (var client = new HttpClient())
-			//{
-			//	var stream = await client.GetStreamAsync(url);
-
-			//             using (var fileStream = System.IO.File.Create("Token.sol"))
-			//             using (var reader = new StreamReader(stream))
-			//             {
-			//                 stream.CopyTo(fileStream);
-			//                 fileStream.Flush();
-			//             }
-			//}
-
-			Models.DeployDetails model = new DeployDetails() 
+			Models.DeployRequest model = new DeployRequest() 
             { 
                 Username = "OpenZeppelin", 
                 Repo = "openzeppelin-solidity", 
@@ -74,9 +48,9 @@ namespace ETHGitHubDeploy.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index(Models.DeployDetails model)
+        public async Task<IActionResult> Deploy(Models.DeployRequest model)
         {
-            var temp = Path.GetTempFileName();
+            String temp = Path.GetTempFileName();
 			Guid id = Guid.NewGuid();
 			String url = String.Format("https://raw.githubusercontent.com/{0}/{1}/{2}/contracts/{3}.sol?token=AIBZDjwzPI3OkfsSXNgUVRaJO0KDjYs6ks5bYVpxwA%3D%3D", model.Username, model.Repo, model.Branch, model.Contract);
 
@@ -84,7 +58,6 @@ namespace ETHGitHubDeploy.Controllers
             {
                 var stream = await client.GetStreamAsync(url);
 
-				//using (var fileStream = System.IO.File.Create(String.Format("{0}_{1}.sol", id, model.Contract)))
                 using (var fileStream = System.IO.File.Create(temp))
                 using (var reader = new StreamReader(stream))
                 {
@@ -93,17 +66,22 @@ namespace ETHGitHubDeploy.Controllers
                 }
             }
 
-			
-            String[] srcs = new String[] { String.Format("{0}_{1}.sol", id, model.Contract) };
+			String hash = CheckHash(temp);
+            String[] srcs = new String[] { temp };
 
             var solcLib = SolcLib.Create("");
             var compiled = solcLib.Compile(srcs, outputSelection);
+
+			Models.DeployResult result = new DeployResult()
+			{
+				JSON = compiled.RawJsonOutput
+			};
             
-            return View();
+            return View(result);
         }
         
         //
-        public void CheckHash(String file)
+        public String CheckHash(String file)
         {
 			using (FileStream fs = new FileStream(file, System.IO.FileMode.Open))
 			{
@@ -117,6 +95,8 @@ namespace ETHGitHubDeploy.Controllers
 						{
 							formatted.AppendFormat("{0:X2}", b);
 						}
+
+						return formatted.ToString();
 					}
 				}
 			}
