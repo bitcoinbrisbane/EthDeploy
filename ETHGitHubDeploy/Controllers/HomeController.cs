@@ -22,14 +22,14 @@ namespace ETHGitHubDeploy.Controllers
     
         OutputType[] outputSelection = new[] {
                     OutputType.Abi,
-                    OutputType.Ast,
-                    OutputType.EvmMethodIdentifiers,
+                    //OutputType.Ast,
+                    //OutputType.EvmMethodIdentifiers,
                     OutputType.EvmAssembly,
                     OutputType.EvmBytecode,
-                    OutputType.IR,
-                    OutputType.DevDoc,
-                    OutputType.UserDoc,
-                    OutputType.Metadata
+                    //OutputType.IR,
+                    //OutputType.DevDoc,
+                    //OutputType.UserDoc,
+                    //OutputType.Metadata
                 };
     
         public IActionResult Index()
@@ -72,9 +72,13 @@ namespace ETHGitHubDeploy.Controllers
             var solcLib = SolcLib.Create("");
             var compiled = solcLib.Compile(srcs, outputSelection);
 
+			var output = compiled.Contracts[temp][model.Contract];
+            
 			Models.DeployResult result = new DeployResult()
 			{
-				JSON = compiled.RawJsonOutput
+				JSON = output.AbiJsonString,
+                ABI = output.AbiJsonString,
+                Bin = BitConverter.ToString(output.Evm.Bytecode.ObjectBytes)
 			};
             
             return View(result);
