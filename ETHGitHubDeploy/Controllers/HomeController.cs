@@ -14,6 +14,10 @@ using SolcNet;
 using SolcNet.CompileErrors;
 using SolcNet.DataDescription.Input;
 using SolcNet.NativeLib;
+using Nethereum.Web3.Accounts; 
+using Nethereum.Util; 
+using Nethereum.Hex.HexConvertors.Extensions; 
+using Nethereum.HdWallet;
 
 namespace ETHGitHubDeploy.Controllers
 {
@@ -40,7 +44,9 @@ namespace ETHGitHubDeploy.Controllers
                 Repo = "openzeppelin-solidity", 
                 Branch = "master", 
                 Contract = "LimitBalance",
-                Node = "https://rinkeby.infura.io",
+                Password = "whip venture public clip similar debris minimum mandate despair govern rotate swim",
+                //Node = "https://rinkeby.infura.io",
+                Node = "https://rinkeby.infura.io/v3/eaf5e0b4a01042a48211762c8d4eec44",
                 Network = "Rinkeby"
             };
              
@@ -74,12 +80,28 @@ namespace ETHGitHubDeploy.Controllers
 
 			var output = compiled.Contracts[temp][model.Contract];
             
-			Models.DeployResult result = new DeployResult()
+			DeployResult result = new DeployResult()
 			{
 				JSON = output.AbiJsonString,
                 ABI = output.AbiJsonString,
-                Bin = BitConverter.ToString(output.Evm.Bytecode.ObjectBytes)
+                Bin = BitConverter.ToString(output.Evm.Bytecode.ObjectBytes).Replace("-", String.Empty)
 			};
+
+			var account = new Wallet(model.Password, null).GetAccount(0);
+			var web3 = new Nethereum.Web3.Web3(model.Node);
+
+
+
+			var txCount = await web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(account.Address);
+
+
+
+			var s = new Nethereum.Signer.TransactionSigner();
+            //var encoded = s.SignTransaction(account.PrivateKey, )
+            
+            //var encoded = web3.OfflineTransactionSigning.SignTransaction(privateKey, receiveAddress, 10, txCount.Value);
+            
+            var transactionHash = await web3.Eth.DeployContract.SendRequestAsync(result.Bin, model.KeyFile);
             
             return View(result);
         }

@@ -9,6 +9,8 @@
     <PackageReference Include="Nethereum.Web3" Version="2.5.1" />
     <PackageReference Include="Octokit" Version="0.31.0" />
     <PackageReference Include="SolcNet" Version="1.1.106" />
+    <PackageReference Include="Nethereum.HdWallet" Version="2.5.1" />
+    <PackageReference Include="Nethereum.Signer" Version="2.5.1" />
   </ItemGroup>
 
   <ItemGroup>
