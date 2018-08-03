@@ -13,7 +13,7 @@ namespace ETHGitHubDeploy.Models
         
         public String Contract { get; set; }
         
-        [DisplayName("Keystore / JSON File ")]
+        [DisplayName("Account")]
         public String KeyFile { get; set; }
         
         [DisplayName("Mnemonic")]
