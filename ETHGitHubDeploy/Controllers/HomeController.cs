@@ -90,18 +90,7 @@ namespace ETHGitHubDeploy.Controllers
 			var account = new Wallet(model.Password, null).GetAccount(0);
 			var web3 = new Nethereum.Web3.Web3(account, model.Node);
 
-
-
-			//var txCount = await web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(account.Address);
-
-
-
-			//var s = new Nethereum.Signer.TransactionSigner();
-            //var encoded = s.SignTransaction(account.PrivateKey, 
-            
-            //var encoded = web3.OfflineTransactionSigning.SignTransaction(privateKey, receiveAddress, 10, txCount.Value);
-            
-            var transactionHash = await web3.Eth.DeployContract.SendRequestAsync(result.Bin, model.KeyFile);
+			result.TxID = await web3.Eth.DeployContract.SendRequestAsync(result.Bin, model.KeyFile, new Nethereum.Hex.HexTypes.HexBigInteger(model.Gas));
             
             return View(result);
         }
