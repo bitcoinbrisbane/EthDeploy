@@ -88,16 +88,16 @@ namespace ETHGitHubDeploy.Controllers
 			};
 
 			var account = new Wallet(model.Password, null).GetAccount(0);
-			var web3 = new Nethereum.Web3.Web3(model.Node);
+			var web3 = new Nethereum.Web3.Web3(account, model.Node);
 
 
 
-			var txCount = await web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(account.Address);
+			//var txCount = await web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(account.Address);
 
 
 
-			var s = new Nethereum.Signer.TransactionSigner();
-            //var encoded = s.SignTransaction(account.PrivateKey, )
+			//var s = new Nethereum.Signer.TransactionSigner();
+            //var encoded = s.SignTransaction(account.PrivateKey, 
             
             //var encoded = web3.OfflineTransactionSigning.SignTransaction(privateKey, receiveAddress, 10, txCount.Value);
             
