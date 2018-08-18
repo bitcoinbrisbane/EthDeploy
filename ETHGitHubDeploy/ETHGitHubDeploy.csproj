@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <DockerComposeProjectPath>../docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,5 +28,7 @@
   <ItemGroup>
     <None Remove="bef804c4-49fa-4533-a405-2cd6b7303860.sol" />
     <None Remove="5710d7ab-cbed-4000-a42b-761f381aa8bc_LimitBalance.sol" />
+    <None Remove="Token.sol" />
+    <None Remove="Dockerfile" />
   </ItemGroup>
 </Project>

@@ -54,31 +54,37 @@ namespace ETHGitHubDeploy.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Deploy(Models.DeployRequest model)
+        public async Task<IActionResult> Deploy(DeployRequest model)
         {
-            String temp = Path.GetTempFileName();
-			Guid id = Guid.NewGuid();
-			String url = String.Format("https://raw.githubusercontent.com/{0}/{1}/{2}/contracts/{3}.sol?token=AIBZDjwzPI3OkfsSXNgUVRaJO0KDjYs6ks5bYVpxwA%3D%3D", model.Username, model.Repo, model.Branch, model.Contract);
+			String[] files = model.Contract.Split(',');
+			String[] srcs = new string[files.Length];
 
-            using (var client = new HttpClient())
-            {
-                var stream = await client.GetStreamAsync(url);
+			for (int i = 0; i < files.Length; i++)
+			{
+				String temp = Path.GetTempPath();
 
-                using (var fileStream = System.IO.File.Create(temp))
-                using (var reader = new StreamReader(stream))
-                {
-                    stream.CopyTo(fileStream);
-                    fileStream.Flush();
-                }
-            }
+				//https://raw.githubusercontent.com/BlockClick/eth-contracts/master/src/contracts/Media.sol?token=AIBZDlnVn934pdoiGZY4P4n-Ekr34LmDks5be32kwA%3D%3D
+				String url = String.Format("https://raw.githubusercontent.com/{0}/{1}/{2}/src/contracts/{3}.sol?token=AIBZDjwzPI3OkfsSXNgUVRaJO0KDjYs6ks5bYVpxwA%3D%3D", model.Username, model.Repo, model.Branch, files[i]);
 
-			String hash = CheckHash(temp);
-            String[] srcs = new String[] { temp };
+				using (var client = new HttpClient())
+				{
+					var stream = await client.GetStreamAsync(url);
 
+					using (var fileStream = System.IO.File.Create(temp + files[i] + ".sol"))
+					using (var reader = new StreamReader(stream))
+					{
+						stream.CopyTo(fileStream);
+						fileStream.Flush();
+					}
+				}
+
+				String hash = CheckHash(temp + files[i] + ".sol");
+			}
+            
             var solcLib = SolcLib.Create("");
             var compiled = solcLib.Compile(srcs, outputSelection);
 
-			var output = compiled.Contracts[temp][model.Contract];
+			var output = compiled.Contracts[files[files.Length - 1] + ".sol"][model.Contract];
             
 			DeployResult result = new DeployResult()
 			{
