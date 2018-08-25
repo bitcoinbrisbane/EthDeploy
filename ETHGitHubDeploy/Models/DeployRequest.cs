@@ -11,6 +11,10 @@ namespace ETHGitHubDeploy.Models
         
         public String Branch { get; set; }
         
+        [DisplayName("Contract Path")]
+        public String ContractPath { get; set; }
+        
+        [DisplayName("Contract")]
         public String Contract { get; set; }
         
         [DisplayName("Account")]

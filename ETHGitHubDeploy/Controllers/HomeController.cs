@@ -42,7 +42,8 @@ namespace ETHGitHubDeploy.Controllers
             { 
                 Username = "OpenZeppelin", 
                 Repo = "openzeppelin-solidity", 
-                Branch = "master", 
+                Branch = "master",
+                ContractPath = "contracts/LimitBalance.sol", 
                 Contract = "LimitBalance",
                 Password = "whip venture public clip similar debris minimum mandate despair govern rotate swim",
                 //Node = "https://rinkeby.infura.io",
@@ -56,21 +57,25 @@ namespace ETHGitHubDeploy.Controllers
         [HttpPost]
         public async Task<IActionResult> Deploy(DeployRequest model)
         {
-			String[] files = model.Contract.Split(',');
-			String[] srcs = new string[files.Length];
+			String[] paths = model.ContractPath.Split(',');
+			String[] srcs = new string[paths.Length];
 
-			for (int i = 0; i < files.Length; i++)
-			{
+
+			int i = 0;
+			//for (int i = 0; i < paths.Length; i++)
+			//{
 				String temp = Path.GetTempPath();
+                String[] contracts = paths[i].Split('/');
+				String contract = contracts[contracts.Length - 1];
 
 				//https://raw.githubusercontent.com/BlockClick/eth-contracts/master/src/contracts/Media.sol?token=AIBZDlnVn934pdoiGZY4P4n-Ekr34LmDks5be32kwA%3D%3D
-				String url = String.Format("https://raw.githubusercontent.com/{0}/{1}/{2}/src/contracts/{3}.sol?token=AIBZDjwzPI3OkfsSXNgUVRaJO0KDjYs6ks5bYVpxwA%3D%3D", model.Username, model.Repo, model.Branch, files[i]);
+				String url = String.Format("https://raw.githubusercontent.com/{0}/{1}/{2}/{3}?token=AIBZDjwzPI3OkfsSXNgUVRaJO0KDjYs6ks5bYVpxwA%3D%3D", model.Username, model.Repo, model.Branch, paths[i]);
 
 				using (var client = new HttpClient())
 				{
 					var stream = await client.GetStreamAsync(url);
 
-					using (var fileStream = System.IO.File.Create(temp + files[i] + ".sol"))
+					using (var fileStream = System.IO.File.Create(temp + contract))
 					using (var reader = new StreamReader(stream))
 					{
 						stream.CopyTo(fileStream);
@@ -78,13 +83,14 @@ namespace ETHGitHubDeploy.Controllers
 					}
 				}
 
-				String hash = CheckHash(temp + files[i] + ".sol");
-			}
+				String hash = CheckHash(temp + contract);
+			srcs[i] = temp + contract;
+			//}
             
             var solcLib = SolcLib.Create("");
             var compiled = solcLib.Compile(srcs, outputSelection);
 
-			var output = compiled.Contracts[files[files.Length - 1] + ".sol"][model.Contract];
+			var output = compiled.Contracts[temp + contract][model.Contract];
             
 			DeployResult result = new DeployResult()
 			{
