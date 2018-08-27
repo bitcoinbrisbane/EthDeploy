@@ -60,7 +60,6 @@ namespace ETHGitHubDeploy.Controllers
 			String[] paths = model.ContractPath.Split(',');
 			String[] srcs = new string[paths.Length];
 
-
 			int i = 0;
 			//for (int i = 0; i < paths.Length; i++)
 			//{

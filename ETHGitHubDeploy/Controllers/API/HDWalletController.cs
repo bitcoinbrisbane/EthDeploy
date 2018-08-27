@@ -14,7 +14,7 @@ namespace ETHGitHubDeploy.Controllers.API
         [HttpGet]
         public IEnumerable<string> Get(String id, int max = 10)
         {
-			var wallet = new Wallet(id, null);
+			Wallet wallet = new Wallet(id, null);
 			List<String> accounts = new List<string>();
 
 			for (int i = 0; i < max; i++)
