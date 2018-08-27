@@ -38,7 +38,7 @@ namespace ETHGitHubDeploy.Controllers
     
         public IActionResult Index()
         {
-			Models.DeployRequest model = new DeployRequest() 
+			DeployRequest model = new DeployRequest() 
             { 
                 Username = "OpenZeppelin", 
                 Repo = "openzeppelin-solidity", 
@@ -57,14 +57,17 @@ namespace ETHGitHubDeploy.Controllers
         [HttpPost]
         public async Task<IActionResult> Deploy(DeployRequest model)
         {
-			String[] paths = model.ContractPath.Split(',');
-			String[] srcs = new string[paths.Length];
 
-			int i = 0;
-			//for (int i = 0; i < paths.Length; i++)
-			//{
+			try
+			{
+				String[] paths = model.ContractPath.Split(',');
+				String[] srcs = new string[paths.Length];
+
+				int i = 0;
+				//for (int i = 0; i < paths.Length; i++)
+				//{
 				String temp = Path.GetTempPath();
-                String[] contracts = paths[i].Split('/');
+				String[] contracts = paths[i].Split('/');
 				String contract = contracts[contracts.Length - 1];
 
 				//https://raw.githubusercontent.com/BlockClick/eth-contracts/master/src/contracts/Media.sol?token=AIBZDlnVn934pdoiGZY4P4n-Ekr34LmDks5be32kwA%3D%3D
@@ -83,27 +86,33 @@ namespace ETHGitHubDeploy.Controllers
 				}
 
 				String hash = CheckHash(temp + contract);
-			srcs[i] = temp + contract;
-			//}
-            
-            var solcLib = SolcLib.Create("");
-            var compiled = solcLib.Compile(srcs, outputSelection);
+				srcs[i] = temp + contract;
+				//}
 
-			var output = compiled.Contracts[temp + contract][model.Contract];
-            
-			DeployResult result = new DeployResult()
-			{
-				JSON = output.AbiJsonString,
-                ABI = output.AbiJsonString,
-                Bin = BitConverter.ToString(output.Evm.Bytecode.ObjectBytes).Replace("-", String.Empty)
-			};
+				var solcLib = SolcLib.Create("");
+				var compiled = solcLib.Compile(srcs, outputSelection);
 
-			var account = new Wallet(model.Password, null).GetAccount(0);
-			var web3 = new Nethereum.Web3.Web3(account, model.Node);
+				var output = compiled.Contracts[temp + contract][model.Contract];
 
-			result.TxID = await web3.Eth.DeployContract.SendRequestAsync(result.Bin, model.KeyFile, new Nethereum.Hex.HexTypes.HexBigInteger(model.Gas));
-            
-            return View(result);
+				DeployResult result = new DeployResult()
+				{
+					JSON = output.AbiJsonString,
+					ABI = output.AbiJsonString,
+					Bin = BitConverter.ToString(output.Evm.Bytecode.ObjectBytes).Replace("-", String.Empty)
+				};
+
+				var account = new Wallet(model.Password, null).GetAccount(0);
+				var web3 = new Nethereum.Web3.Web3(account, model.Node);
+
+				result.TxID = await web3.Eth.DeployContract.SendRequestAsync(result.Bin, model.KeyFile, new Nethereum.Hex.HexTypes.HexBigInteger(model.Gas));
+
+				return View(result);
+			}
+            catch (Exception ex)
+            {
+				Console.Write(ex.Message);
+				throw ex;
+            }
         }
         
         //
