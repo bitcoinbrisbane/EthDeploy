@@ -57,7 +57,6 @@ namespace ETHGitHubDeploy.Controllers
         [HttpPost]
         public async Task<IActionResult> Deploy(DeployRequest model)
         {
-
 			try
 			{
 				String[] paths = model.ContractPath.Split(',');
