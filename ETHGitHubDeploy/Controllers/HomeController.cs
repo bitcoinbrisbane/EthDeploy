@@ -18,12 +18,16 @@ using Nethereum.Web3.Accounts;
 using Nethereum.Util; 
 using Nethereum.Hex.HexConvertors.Extensions; 
 using Nethereum.HdWallet;
+using Microsoft.AspNetCore.Http;
 
 namespace ETHGitHubDeploy.Controllers
 {
     public class HomeController : Controller
     {
-    
+		private readonly String client_id = "3061f3362d3bf92ab105";
+
+		private String token = "";
+		
         OutputType[] outputSelection = new[] {
                     OutputType.Abi,
                     //OutputType.Ast,
@@ -36,11 +40,22 @@ namespace ETHGitHubDeploy.Controllers
                     //OutputType.Metadata
                 };
     
-        public IActionResult Index()
+        public async Task<IActionResult> Index(String code, String username)
         {
+			if (!String.IsNullOrEmpty(code))
+			{
+				token = await Post(client_id, "91c4df350fa87192ffc1d53468c1b2e4311c1d7f", code);
+				HttpContext.Session.SetString("githubtoken", token);
+			}
+			else
+			{
+			//String token = HttpContext.Session.GetString("githubtoken");
+				Response.Redirect("https://github.com/login/oauth/authorize?client_id=" + client_id);
+			}
+
 			DeployRequest model = new DeployRequest() 
             { 
-                Username = "OpenZeppelin", 
+                Username = username, //"OpenZeppelin", 
                 Repo = "openzeppelin-solidity", 
                 Branch = "master",
                 ContractPath = "contracts/LimitBalance.sol", 
@@ -86,7 +101,6 @@ namespace ETHGitHubDeploy.Controllers
 
 				String hash = CheckHash(temp + contract);
 				srcs[i] = temp + contract;
-				//}
 
 				var solcLib = SolcLib.Create("");
 				var compiled = solcLib.Compile(srcs, outputSelection);
@@ -135,5 +149,30 @@ namespace ETHGitHubDeploy.Controllers
 				}
 			}
         }
+
+		private async Task<String> Post(String clientId, String secret, String code)
+		{
+			IList<KeyValuePair<string, string>> nameValueCollection = new List<KeyValuePair<string, string>> {
+				{ new KeyValuePair<string, string>("client_id", clientId) },
+				{ new KeyValuePair<string, string>("client_secret", secret) },
+				{ new KeyValuePair<string, string>("code", code) },
+			};
+
+			using (var client = new HttpClient())
+			{
+				var result = await client.PostAsync("https://github.com/login/oauth/access_token", new FormUrlEncodedContent(nameValueCollection));
+				var response = await result.Content.ReadAsStringAsync();
+
+				if (response.Contains("access_token"))
+				{
+					String token = response.Split("&")[0];
+					return token.Split("=")[1];
+				}
+				else
+				{
+					throw new Exception();
+				}
+			}
+		}
     }
 }
