@@ -1,0 +1,62 @@
+@model ETHGitHubDeploy.Models.Step1ViewModel
+
+@{
+    ViewBag.Title = "ETH Deploy";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+
+@using (Html.BeginForm("Deploy", "Home"))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+    
+        <div class="alert alert-info">
+            Step 1:  Github details
+        </div>
+    
+        <div class="panel panel-default">
+            <div class="panel-heading">Compilier</div>
+            <div class="panel-body">
+                <strong>0.4.24</strong>
+            </div>
+        </div>
+        
+        <div class="panel panel-default">
+            <div class="panel-heading">GitHub Details</div>
+            <div class="panel-body">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Username, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Username, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Repo, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Repo, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Repo, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Branch, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Branch, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Branch, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Load contracts" class="btn btn-success" />
+            </div>
+        </div>
+    </div>
+}

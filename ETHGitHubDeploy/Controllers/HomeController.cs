@@ -44,12 +44,11 @@ namespace ETHGitHubDeploy.Controllers
         {
 			if (!String.IsNullOrEmpty(code))
 			{
-				token = await Post(client_id, "91c4df350fa87192ffc1d53468c1b2e4311c1d7f", code);
+				token = await GetToken(client_id, "91c4df350fa87192ffc1d53468c1b2e4311c1d7f", code);
 				HttpContext.Session.SetString("githubtoken", token);
 			}
 			else
 			{
-			//String token = HttpContext.Session.GetString("githubtoken");
 				Response.Redirect("https://github.com/login/oauth/authorize?client_id=" + client_id);
 			}
 
@@ -62,11 +61,24 @@ namespace ETHGitHubDeploy.Controllers
                 Contract = "LimitBalance",
                 Password = "whip venture public clip similar debris minimum mandate despair govern rotate swim",
                 //Node = "https://rinkeby.infura.io",
-                Node = "https://rinkeby.infura.io/v3/eaf5e0b4a01042a48211762c8d4eec44",
+                Node = "https://dltx.io:8545",
                 Network = "Rinkeby"
             };
              
             return View(model);
+        }
+
+		public IActionResult Step1(String username, String repo)
+        {
+			Models.Step1ViewModel model = new Step1ViewModel() { Username = username, Repo = repo };
+            return View(model);
+        }
+
+		[HttpPost]
+		public IActionResult Step2(Step1ViewModel model)
+        {
+			//var client = new Octokit.GitHubClient();
+            return View();
         }
 
         [HttpPost]
@@ -150,7 +162,7 @@ namespace ETHGitHubDeploy.Controllers
 			}
         }
 
-		private async Task<String> Post(String clientId, String secret, String code)
+		private async Task<String> GetToken(String clientId, String secret, String code)
 		{
 			IList<KeyValuePair<string, string>> nameValueCollection = new List<KeyValuePair<string, string>> {
 				{ new KeyValuePair<string, string>("client_id", clientId) },
