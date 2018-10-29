@@ -123,4 +123,23 @@
             </div>
         </div>
     </div>
-    }
+}
+
+<script language="javascript">
+    $('#Repo').change(function(){
+        var recordId = this.value;
+
+        var owner = 'OpenZeppelin';
+        var repo = 'openzeppelin-solidity';
+
+        $.getJSON("/api/branch/",
+            {
+                owner: owner,
+                repo: repo
+            },
+            function (data) {
+                $('RecordName').val(data.Name);
+                $('RecordType').val(data.Type);
+            });
+    });
+</script>
