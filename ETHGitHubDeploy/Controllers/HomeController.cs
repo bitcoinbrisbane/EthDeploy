@@ -58,7 +58,7 @@ namespace ETHGitHubDeploy.Controllers
                 Repo = "mythril-classic", 
                 Branch = "develop",
                 ContractPath = "solidity_examples", 
-                Contract = "BECToken.sol",
+                Contract = "BecToken",
                 Password = "whip venture public clip similar debris minimum mandate despair govern rotate swim",
                 //Node = "https://rinkeby.infura.io",
                 Node = "http://121.210.77.231:8545",
@@ -99,14 +99,14 @@ namespace ETHGitHubDeploy.Controllers
 				}
 
 				var solcLib = SolcLib.Create("");
-				var compiled = solcLib.Compile(temp + model.Contract, outputSelection);
+				var compiled = solcLib.Compile(temp + model.Contract + ".sol", outputSelection);
 
-				var output = compiled.Contracts[temp + model.Contract][model.Contract];
+				var output = compiled.Contracts[temp + model.Contract + ".sol"][model.Contract];
 
 				DeployResult result = new DeployResult()
 				{
 					JSON = output.AbiJsonString,
-					ABI = output.AbiJsonString,
+					ABI = "",
 					Bin = BitConverter.ToString(output.Evm.Bytecode.ObjectBytes).Replace("-", String.Empty)
 				};
 
