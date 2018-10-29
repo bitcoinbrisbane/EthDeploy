@@ -23,7 +23,7 @@ namespace ETHGitHubDeploy.Models
         [DisplayName("Account")]
         public String KeyFile { get; set; }
         
-        [DisplayName("Mnemonic")]
+        [DisplayName("Private Key")]
         public String Password { get; set; }
         
         public String Compiler { get; set; }

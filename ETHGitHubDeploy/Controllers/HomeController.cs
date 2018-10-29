@@ -77,8 +77,6 @@ namespace ETHGitHubDeploy.Controllers
             	gitHubClient.Credentials = new Credentials(HttpContext.Session.GetString("githubtoken")); 
 
 				IReadOnlyList<RepositoryContent> contents = await gitHubClient.Repository.Content.GetAllContentsByRef(model.Username, model.Repo, model.ContractPath, model.Branch);
-				
-				String[] srcs;
 				String temp = Path.GetTempPath();
 				
 				foreach(RepositoryContent content in contents.Where(c => c.Name.EndsWith(".sol")))
