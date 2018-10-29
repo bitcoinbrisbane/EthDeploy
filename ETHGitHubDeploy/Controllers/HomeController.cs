@@ -25,7 +25,7 @@ namespace ETHGitHubDeploy.Controllers
     public class HomeController : Controller
     {
 		private readonly String client_id = "3061f3362d3bf92ab105";
-
+		
 		private String token = "";
 		
         OutputType[] outputSelection = new[] {
@@ -86,33 +86,46 @@ namespace ETHGitHubDeploy.Controllers
         {
 			try
 			{
-				String[] paths = model.ContractPath.Split(',');
-				String[] srcs = new string[paths.Length];
 
-				int i = 0;
-				//for (int i = 0; i < paths.Length; i++)
-				//{
-				String temp = Path.GetTempPath();
-				String[] contracts = paths[i].Split('/');
-				String contract = contracts[contracts.Length - 1];
+            	var gitHubClient = new GitHubClient(new ProductHeaderValue(client_id));
+            	gitHubClient.Credentials = new Credentials(HttpContext.Session.GetString("githubtoken")); 
+            
+            	IReadOnlyList<RepositoryContent> contents = await gitHubClient.Repository.Content.GetAllContents(model.Username, model.Repo);
 
-				//https://raw.githubusercontent.com/BlockClick/eth-contracts/master/src/contracts/Media.sol?token=AIBZDlnVn934pdoiGZY4P4n-Ekr34LmDks5be32kwA%3D%3D
-				String url = String.Format("https://raw.githubusercontent.com/{0}/{1}/{2}/{3}?token=AIBZDjwzPI3OkfsSXNgUVRaJO0KDjYs6ks5bYVpxwA%3D%3D", model.Username, model.Repo, model.Branch, paths[i]);
-
-				using (var client = new HttpClient())
+				foreach(RepositoryContent content in contents)
 				{
-					var stream = await client.GetStreamAsync(url);
 
-					using (var fileStream = System.IO.File.Create(temp + contract))
-					using (var reader = new StreamReader(stream))
+					
+					//String[] paths = model.ContractPath.Split(',');
+					//String[] srcs = new string[paths.Length];
+
+					//int i = 0;
+					//for (int i = 0; i < paths.Length; i++)
+					//{
+
+					String temp = Path.GetTempPath();
+					//String[] contracts = paths[i].Split('/');
+					//String contract = contracts[contracts.Length - 1];
+
+					//https://raw.githubusercontent.com/BlockClick/eth-contracts/master/src/contracts/Media.sol?token=AIBZDlnVn934pdoiGZY4P4n-Ekr34LmDks5be32kwA%3D%3D
+
+					using (var client = new HttpClient())
 					{
-						stream.CopyTo(fileStream);
-						fileStream.Flush();
-					}
-				}
+						var stream = await client.GetStreamAsync(content.DownloadUrl);
 
-				String hash = CheckHash(temp + contract);
-				srcs[i] = temp + contract;
+						using (var fileStream = System.IO.File.Create(temp + content.Name))
+						using (var reader = new StreamReader(stream))
+						{
+							stream.CopyTo(fileStream);
+							fileStream.Flush();
+						}
+					}
+
+					String hash = CheckHash(temp + content.Name);
+
+					//content.Sha;
+					//srcs[i] = temp + contract;
+				}
 
 				var solcLib = SolcLib.Create("");
 				var compiled = solcLib.Compile(srcs, outputSelection);
