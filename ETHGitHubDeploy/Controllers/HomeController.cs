@@ -108,7 +108,7 @@ namespace ETHGitHubDeploy.Controllers
 					Bin = BitConverter.ToString(output.Evm.Bytecode.ObjectBytes).Replace("-", String.Empty)
 				};
 
-				var account = new Wallet(model.Password, null).GetAccount(0);
+				var account = new Wallet(model.Password, null).GetAccount(Convert.ToInt32(model.KeyFile));
 				var web3 = new Nethereum.Web3.Web3(account, model.Node);
 
 				result.TxID = await web3.Eth.DeployContract.SendRequestAsync(result.Bin, model.KeyFile, new Nethereum.Hex.HexTypes.HexBigInteger(model.Gas));
