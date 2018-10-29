@@ -54,14 +54,14 @@ namespace ETHGitHubDeploy.Controllers
 
 			DeployRequest model = new DeployRequest() 
             { 
-                Username = username, //"OpenZeppelin", 
-                Repo = "openzeppelin-solidity", 
+                Username = "ConsenSys", 
+                Repo = "mythril-classic", 
                 Branch = "master",
-                ContractPath = "contracts/LimitBalance.sol", 
-                Contract = "LimitBalance",
+                ContractPath = "solidity_examples", 
+                Contract = "BECToken.sol",
                 Password = "whip venture public clip similar debris minimum mandate despair govern rotate swim",
                 //Node = "https://rinkeby.infura.io",
-                Node = "https://dltx.io:8545",
+                Node = "http://dltx.io:8545",
                 Network = "Rinkeby"
             };
              
