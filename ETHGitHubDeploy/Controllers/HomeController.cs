@@ -56,29 +56,16 @@ namespace ETHGitHubDeploy.Controllers
             { 
                 Username = "ConsenSys", 
                 Repo = "mythril-classic", 
-                Branch = "master",
+                Branch = "develop",
                 ContractPath = "solidity_examples", 
                 Contract = "BECToken.sol",
                 Password = "whip venture public clip similar debris minimum mandate despair govern rotate swim",
                 //Node = "https://rinkeby.infura.io",
-                Node = "http://dltx.io:8545",
+                Node = "http://121.210.77.231:8545",
                 Network = "Rinkeby"
             };
              
             return View(model);
-        }
-
-		public IActionResult Step1(String username, String repo)
-        {
-			Models.Step1ViewModel model = new Step1ViewModel() { Username = username, Repo = repo };
-            return View(model);
-        }
-
-		[HttpPost]
-		public IActionResult Step2(Step1ViewModel model)
-        {
-			//var client = new Octokit.GitHubClient();
-            return View();
         }
 
         [HttpPost]
@@ -86,29 +73,16 @@ namespace ETHGitHubDeploy.Controllers
         {
 			try
 			{
-
             	var gitHubClient = new GitHubClient(new ProductHeaderValue(client_id));
             	gitHubClient.Credentials = new Credentials(HttpContext.Session.GetString("githubtoken")); 
-            
-            	IReadOnlyList<RepositoryContent> contents = await gitHubClient.Repository.Content.GetAllContents(model.Username, model.Repo);
 
-				foreach(RepositoryContent content in contents)
+				IReadOnlyList<RepositoryContent> contents = await gitHubClient.Repository.Content.GetAllContentsByRef(model.Username, model.Repo, model.ContractPath, model.Branch);
+				
+				String[] srcs;
+				String temp = Path.GetTempPath();
+				
+				foreach(RepositoryContent content in contents.Where(c => c.Name.EndsWith(".sol")))
 				{
-
-					
-					//String[] paths = model.ContractPath.Split(',');
-					//String[] srcs = new string[paths.Length];
-
-					//int i = 0;
-					//for (int i = 0; i < paths.Length; i++)
-					//{
-
-					String temp = Path.GetTempPath();
-					//String[] contracts = paths[i].Split('/');
-					//String contract = contracts[contracts.Length - 1];
-
-					//https://raw.githubusercontent.com/BlockClick/eth-contracts/master/src/contracts/Media.sol?token=AIBZDlnVn934pdoiGZY4P4n-Ekr34LmDks5be32kwA%3D%3D
-
 					using (var client = new HttpClient())
 					{
 						var stream = await client.GetStreamAsync(content.DownloadUrl);
@@ -121,16 +95,13 @@ namespace ETHGitHubDeploy.Controllers
 						}
 					}
 
-					String hash = CheckHash(temp + content.Name);
-
-					//content.Sha;
-					//srcs[i] = temp + contract;
+					//String hash = CheckHash(temp + content.Name);
 				}
 
 				var solcLib = SolcLib.Create("");
-				var compiled = solcLib.Compile(srcs, outputSelection);
+				var compiled = solcLib.Compile(temp + model.Contract, outputSelection);
 
-				var output = compiled.Contracts[temp + contract][model.Contract];
+				var output = compiled.Contracts[temp + model.Contract][model.Contract];
 
 				DeployResult result = new DeployResult()
 				{
