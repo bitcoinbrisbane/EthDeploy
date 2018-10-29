@@ -1,0 +1,2 @@
+cd ~/EthDeploy
+git pull
